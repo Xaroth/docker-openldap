@@ -1,6 +1,6 @@
 #!/bin/bash
 
-trap "{ kill -INT `cat /run/slapd/slapd.pid` || true ; exit }" SIGINT SIGTERM
+trap "{ echo 'Trap received, exiting' ;  kill -INT `cat /run/slapd/slapd.pid` || true ; exit }" SIGINT SIGTERM
 
 # set -x (bash debug) if log level is trace
 # https://github.com/osixia/docker-light-baseimage/blob/stable/image/tool/log-helper
@@ -20,7 +20,7 @@ if [ -z "$FILE_TO_WAIT_FOR" ]; then
 fi
 
 HASH=`md5sum "${FILE_TO_WAIT_FOR}"`
-PIDFILE=/run/slapd/slapd.pid
+PIDFILE="/run/slapd/slapd.pid"
 
 function stop_if_running() {
     if [ -f "${PIDFILE}" ] ; then
@@ -39,7 +39,7 @@ function start_if_not_running() {
 while true; do
     start_if_not_running
 
-    inotifywait "$FILE_TO_WAIT_FOR" MODIFY
+    inotifywait "$FILE_TO_WAIT_FOR" -e MODIFY
 
     NEWHASH=`md5sum ${FILE_TO_WAIT_FOR}`
 
