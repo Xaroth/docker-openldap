@@ -7,7 +7,6 @@ RUN apt-get -y update \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ADD wait-for-file /wait-for-file
-ADD run-slapd /run-slapd
 ADD process.sh /container/service/slapd/process.sh
 ADD ldif/* /container/service/slapd/assets/config/bootstrap/ldif/
 

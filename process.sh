@@ -22,6 +22,6 @@ fi
 while true; do
     exec /usr/sbin/slapd -h "ldap://$HOSTNAME ldaps://$HOSTNAME ldapi:///" -u openldap -g openldap -d $LDAP_LOG_LEVEL &
     PID=$!
-    inotifywait "$LDAP_TLS_KEY_FILENAME"
+    inotifywait "$FILE_TO_WAIT_FOR"
     kill -INT `cat /run/slapd/slapd.pid` $PID
 done
