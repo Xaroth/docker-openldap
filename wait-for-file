@@ -1,0 +1,27 @@
+#!/bin/bash
+
+CONTAINER_SERVICE_DIR="${CONTAINER_SERVICE_DIR:-/container/service}"
+LDAP_TLS_KEY_FILENAME="${LDAP_TLS_KEY_FILENAME:-ldap.key}"
+
+if [ -z "$FILE_TO_WAIT_FOR" ]; then
+    # By default, we'll wait for the privkey file
+    FILE_TO_WAIT_FOR="${CONTAINER_SERVICE_DIR}/slapd/assets/certs/${LDAP_TLS_KEY_FILENAME}"
+fi
+
+echo "Waiting for availability of file $FILE_TO_WAIT_FOR"
+
+while [ ! -f "$FILE_TO_WAIT_FOR" ]; do
+    echo -n "."
+    sleep 1;
+done
+echo ""
+if [ ! -f "$FILE_TO_WAIT_FOR" ]; then
+    exit 1
+fi
+echo "file found"
+
+if [ ! -z "$WAIT_RESTART_IF_CHANGED" ]; then
+    echo "Wait for changes"
+fi
+
+exec "$@"

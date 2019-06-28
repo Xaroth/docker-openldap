@@ -1,0 +1,11 @@
+dn: cn=ldap-user,ou=groups,{{ LDAP_BASE_DN }}
+objectClass: top
+objectClass: posixGroup
+objectClass: groupOfUniqueNames
+objectClass: sambaGroupMapping
+cn: ldap-user
+gidNumber: 10000
+sambaGroupType: 5
+sambaSID: S-1-5-21-0000000000-0000000000-0000000000-513
+owner: uid=root,ou=people,{{ LDAP_BASE_DN }}
+uniqueMember: uid=root,ou=people,{{ LDAP_BASE_DN }}

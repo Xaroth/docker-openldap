@@ -1,0 +1,17 @@
+dn: uid=root,ou=people,{{ LDAP_BASE_DN }}
+objectClass: top
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: ldapPublicKey
+objectClass: sambaSamAccount
+uid: root
+cn: root
+sn: root
+gidNumber: 0
+uidNumber: 0
+homeDirectory: /root
+mail: root@{{ LDAP_DOMAIN  }}
+sambaSID: S-1-5-21-0000000000-0000000000-0000000000-500
