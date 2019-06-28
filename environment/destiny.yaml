@@ -1,0 +1,13 @@
+LDAP_LOG_LEVEL: 0
+LDAP_BACKEND: mdb
+LDAP_READONLY_USER: true
+LDAP_READONLY_USER_USERNAME: readonly
+LDAP_RFC2307BIS_SCHEMA: true
+#
+# defaults used across the environment that differ slightly from the default osixia/openldap settings
+#
+LDAP_TLS_VERIFY_CLIENT: never
+LDAP_TLS_CRT_FILENAME: cert.pem
+LDAP_TLS_KEY_FILENAME: privkey.pem
+LDAP_TLS_CA_CRT_FILENAME: chain.pem
+LDAP_TLS_DH_PARAM_FILENAME: dhparam.pem

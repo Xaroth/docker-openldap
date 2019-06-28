@@ -8,7 +8,8 @@ RUN apt-get -y update \
 
 ADD wait-for-file /wait-for-file
 ADD process.sh /container/service/slapd/process.sh
-ADD ldif/* /container/service/slapd/assets/config/bootstrap/ldif/
+ADD ldif /container/service/slapd/assets/config/bootstrap/ldif
+ADD environment /container/environment/01-custom
 
 RUN chmod +x /wait-for-file /container/service/slapd/process.sh
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-trap "{ kill -INT `cat /run/slapd/slapd.pid` || true }" SIGINT SIGTERM EXIT
+trap "{ kill -INT `cat /run/slapd/slapd.pid` || true ; exit }" SIGINT SIGTERM
 
 # set -x (bash debug) if log level is trace
 # https://github.com/osixia/docker-light-baseimage/blob/stable/image/tool/log-helper
@@ -12,16 +12,42 @@ log-helper level eq trace && set -x
 ulimit -n $LDAP_NOFILE
 
 CONTAINER_SERVICE_DIR="${CONTAINER_SERVICE_DIR:-/container/service}"
-LDAP_TLS_KEY_FILENAME="${LDAP_TLS_KEY_FILENAME:-ldap.key}"
+LDAP_TLS_KEY_FILENAME="${LDAP_TLS_KEY_FILENAME:-privkey.pem}"
 
 if [ -z "$FILE_TO_WAIT_FOR" ]; then
     # By default, we'll wait for the privkey file
     FILE_TO_WAIT_FOR="${CONTAINER_SERVICE_DIR}/slapd/assets/certs/${LDAP_TLS_KEY_FILENAME}"
 fi
 
+HASH=`md5sum "${FILE_TO_WAIT_FOR}"`
+PIDFILE=/run/slapd/slapd.pid
+
+function stop_if_running() {
+    if [ -f "${PIDFILE}" ] ; then
+        kill -INT `cat ${PIDFILE}`
+    fi
+    killall -INT slapd
+}
+
+function start_if_not_running() {
+    CURRENT_PID=`pgrep -F "${PIDFILE}" 2>/dev/null || true`
+    if [ -z "${CURRENT_PID}" ] ; then
+        exec /usr/sbin/slapd -h "ldap://$HOSTNAME ldaps://$HOSTNAME ldapi:///" -u openldap -g openldap -d $LDAP_LOG_LEVEL &
+    fi
+}
+
 while true; do
-    exec /usr/sbin/slapd -h "ldap://$HOSTNAME ldaps://$HOSTNAME ldapi:///" -u openldap -g openldap -d $LDAP_LOG_LEVEL &
-    PID=$!
-    inotifywait "$FILE_TO_WAIT_FOR"
-    kill -INT `cat /run/slapd/slapd.pid` $PID
+    start_if_not_running
+
+    inotifywait "$FILE_TO_WAIT_FOR" MODIFY
+
+    NEWHASH=`md5sum ${FILE_TO_WAIT_FOR}`
+
+    if [ "${HASH}" != "${NEWHASH}" ] ; then
+        stop_if_running
+        HASH="${NEWHASH}"
+    fi
 done
+
+stop_if_running
+exit 0
