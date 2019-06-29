@@ -1,7 +1,7 @@
 #!/bin/bash
 
 CONTAINER_SERVICE_DIR="${CONTAINER_SERVICE_DIR:-/container/service}"
-LDAP_TLS_KEY_FILENAME="${LDAP_TLS_KEY_FILENAME:-ldap.key}"
+LDAP_TLS_KEY_FILENAME="${LDAP_TLS_KEY_FILENAME:-privkey.pem}"
 
 if [ -z "$FILE_TO_WAIT_FOR" ]; then
     # By default, we'll wait for the privkey file

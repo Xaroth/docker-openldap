@@ -1,16 +1,16 @@
-dn: ou=people,{{ LDAP_BASE_DN  }}
+dn: ou=people,{{ LDAP_BASE_DN }}
 objectClass: top
 objectClass: organizationalUnit
 ou: people
 
 
-dn: ou=groups,{{ LDAP_BASE_DN  }}
+dn: ou=groups,{{ LDAP_BASE_DN }}
 objectClass: top
 objectClass: organizationalUnit
 ou: groups
 
 
-dn: ou=machines,{{ LDAP_BASE_DN  }}
+dn: ou=machines,{{ LDAP_BASE_DN }}
 objectClass: top
 objectClass: organizationalUnit
 ou: machines
