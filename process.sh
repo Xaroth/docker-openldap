@@ -1,6 +1,6 @@
 #!/bin/bash
 
-trap "{ echo 'Trap received, exiting' ;  kill -INT `cat /run/slapd/slapd.pid` || true ; exit }" SIGINT SIGTERM
+trap "{ echo 'Trap received, exiting' ;  kill -INT `cat /run/slapd/slapd.pid` ; exit }" SIGINT SIGTERM
 
 # set -x (bash debug) if log level is trace
 # https://github.com/osixia/docker-light-baseimage/blob/stable/image/tool/log-helper

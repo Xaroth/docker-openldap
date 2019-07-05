@@ -1,0 +1,29 @@
+# This effectively overrides the default olcAccess rules, but ours are arguably better.
+dn: olcDatabase={1}{{ LDAP_BACKEND }},cn=config
+changetype: modify
+# First we remove the existing rules
+delete: olcAccess
+-
+add: olcAccess
+# Allow users to update their own passwords
+# - Allow admins to do the same
+# - Allow the readonly user to see the information
+# - Disallow access to anybody else
+olcAccess: to attrs=userPassword,shadowLastChange,sambaNTPassword,sambaPwdLastSet by self write by dn="cn=admin,{{ LDAP_BASE_DN }}" write by dn="cn={{ LDAP_READONLY_USER_USERNAME }},{{ LDAP_BASE_DN }}" read by anonymous auth by * none
+# Allow users to set their own SSH Public Keys
+# - Allow admins to do the same
+# - Allow the readonly user to see the information
+# - Allow other users to see the information
+olcAccess: to attrs=sshPublicKey by self write by dn="cn=admin,{{ LDAP_BASE_DN }}" write by dn="cn={{ LDAP_READONLY_USER_USERNAME }},{{ LDAP_BASE_DN }}" read by users read
+# Allow users read-access to their own simple information (uid, gid, homedir, etc)
+# - Allow admins to write this information
+# - Allow the readonly user to see the information
+# - Allow other users to see the information
+olcAccess: to attrs=uid,uidNumber,gidNumber,homeDirectory,loginShell,memberOf,sambaSID by self read by dn="cn=admin,{{ LDAP_BASE_DN }}" write by dn="cn={{ LDAP_READONLY_USER_USERNAME }},{{ LDAP_BASE_DN }}" read by users read
+# Allow users read-access to their own object information
+# - Allow admins to write this information
+# - Allow the readonly user to see the information
+# - Allow other users to see the information
+olcAccess: to * by self read by dn="cn=admin,{{ LDAP_BASE_DN }}" write by dn="cn={{ LDAP_READONLY_USER_USERNAME }},{{ LDAP_BASE_DN }}" read by users read
+# Allow read-access to the root dn
+olcAccess: to dn.base="" by users read
