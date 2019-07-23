@@ -1,6 +1,6 @@
 #!/bin/bash
 
-trap "{ echo 'Trap received, exiting' ;  kill -INT `cat /run/slapd/slapd.pid` ; exit }" SIGINT SIGTERM
+trap "{ kill -INT `cat /run/slapd/slapd.pid` ; exit }" SIGINT SIGTERM
 
 # set -x (bash debug) if log level is trace
 # https://github.com/osixia/docker-light-baseimage/blob/stable/image/tool/log-helper
@@ -13,6 +13,13 @@ ulimit -n $LDAP_NOFILE
 
 CONTAINER_SERVICE_DIR="${CONTAINER_SERVICE_DIR:-/container/service}"
 LDAP_TLS_KEY_FILENAME="${LDAP_TLS_KEY_FILENAME:-privkey.pem}"
+
+if [ "${LDAP_TLS,,}" != "true" ] && [ -z "$FILE_TO_WAIT_FOR" ]; then
+    # If TLS is not enabled and we don't have a file to wait for, there's no use in defaulting to waiting for a cert update
+    #  so we can just start slapd and be done with it.
+    exec /usr/sbin/slapd -h "ldap://$HOSTNAME ldaps://$HOSTNAME ldapi:///" -u openldap -g openldap -d $LDAP_LOG_LEVEL
+    exit $?
+done
 
 if [ -z "$FILE_TO_WAIT_FOR" ]; then
     # By default, we'll wait for the privkey file

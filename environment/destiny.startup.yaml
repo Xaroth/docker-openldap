@@ -6,6 +6,7 @@ LDAP_RFC2307BIS_SCHEMA: true
 #
 # defaults used across the environment that differ slightly from the default osixia/openldap settings
 #
+LDAP_TLS: false
 LDAP_TLS_VERIFY_CLIENT: never
 LDAP_TLS_CRT_FILENAME: cert.pem
 LDAP_TLS_KEY_FILENAME: privkey.pem

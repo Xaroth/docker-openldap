@@ -3,6 +3,12 @@
 CONTAINER_SERVICE_DIR="${CONTAINER_SERVICE_DIR:-/container/service}"
 LDAP_TLS_KEY_FILENAME="${LDAP_TLS_KEY_FILENAME:-privkey.pem}"
 
+if [ "${LDAP_TLS,,}" != "true" ] && [ -z "$FILE_TO_WAIT_FOR" ]; then
+    echo "Not using TLS and no wait file specified, skipping to startup."
+    exec "$@"
+    exit $?
+fi
+
 if [ -z "$FILE_TO_WAIT_FOR" ]; then
     # By default, we'll wait for the privkey file
     FILE_TO_WAIT_FOR="${CONTAINER_SERVICE_DIR}/slapd/assets/certs/${LDAP_TLS_KEY_FILENAME}"
@@ -14,6 +20,7 @@ while [ ! -f "$FILE_TO_WAIT_FOR" ]; do
     echo -n "."
     sleep 1;
 done
+
 echo ""
 if [ ! -f "$FILE_TO_WAIT_FOR" ]; then
     exit 1
